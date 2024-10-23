@@ -50,3 +50,10 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+
+# own gitignore rules
+.idea
+JProfes*
+JPprofes_v4.23e
+JPprofes_v4.23e.zip
