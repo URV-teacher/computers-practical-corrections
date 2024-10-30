@@ -27,10 +27,7 @@ check_deadline()
 
 }
 
-
-# Description: Corrects the computers practical exercise of one student
-# Argument 1: Relative or absolute path to the json file that contains the data for the correction
-correct_one()
+parse_data()
 {
   # Parse data
   name="$(cat "$1" | ${JQ} .name | tr -d "\"")"
@@ -41,24 +38,63 @@ correct_one()
   test2="$(cat "$1" | ${JQ} .test2 | tr -d "\"")"
   fusion="$(cat "$1" | ${JQ} .fusion | tr -d "\"")"
   lab="$(cat "$1" | ${JQ} .lab | tr -d "\"")"
+}
 
+
+clone()
+{
+  # Perform clone and checkout code
+  echo "* INFO: Deleting ${PROJECT_FOLDER}/tmp/${repo}-${role}"
+  rm -rf "${PROJECT_FOLDER}/tmp/${repo}-${role}"
+
+  # Clone repo
+  echo "* INFO: cloning ${repo} into ${PROJECT_FOLDER}/tmp/${repo}-${role}"
+  git clone "${GIT_USER}@${GIT_SERVER}:${repo}" "${PROJECT_FOLDER}/tmp/${repo}-${role}"
+
+  # Force git to work in the cloned repo and checkout first test
+  echo "* INFO: setting ${PROJECT_FOLDER}/tmp/${repo}-${role} as the current working git tree"
+  export GIT_WORK_TREE="${PROJECT_FOLDER}/tmp/${repo}-${role}"
+
+  echo "* INFO: Checking out test1 ${test1}"
+  git checkout "${test1}"
+
+  # End function if it is the same test
+  if [ "${test1}" == "${test2}" ]; then
+    echo "* INFO: test1 ${test1} and ${test2} are the same, ending clone function"
+    return
+  else
+    echo "* INFO: test1 ${test1} and ${test2} are different, cloning again to check out for ${test2}"
+  fi
+
+  # Perform clone and checkout code
+  echo "* INFO: Checking out test2 ${test2}"
+  rm -rf "${PROJECT_FOLDER}/tmp/${repo}-${role}2"
+
+  # Clone repo
+  echo "* INFO: cloning ${repo} into ${PROJECT_FOLDER}/tmp/${repo}-${role}2"
+  git clone "${GIT_USER}@${GIT_SERVER}:${repo}" "${PROJECT_FOLDER}/tmp/${repo}-${role}2"
+
+  # Force git to work in the cloned repo and checkout first test
+  echo "* INFO: setting ${PROJECT_FOLDER}/tmp/${repo}-${role}2 as the current working git tree"
+  export GIT_WORK_TREE="${PROJECT_FOLDER}/tmp/${repo}-${role}2"
+
+  echo "* INFO: Checking out test2 ${test2}"
+  git checkout "${test2}"
+}
+
+# Description: Corrects the computers practical exercise of one student
+# Argument 1: Relative or absolute path to the json file that contains the data for the correction
+correct_one()
+{
   echo "
 ************************************************************************************************************************
 * Student: ${name} (${email})
 * Role: ${role}
 ************************************************************************************************************************"
 
-  # Perform clone and checkout code
-  rm -rf "${PROJECT_FOLDER}/tmp/${repo}-${role}"
+
   #echo   git clone "${GIT_USER}:${GIT_PASSWORD}@${GIT_SERVER}:${repo}" "${PROJECT_FOLDER}/tmp/${repo}-${role}"
   #git clone "https://${GIT_USER}:${GIT_PASSWORD}@${GIT_SERVER}:${repo}" "${PROJECT_FOLDER}/tmp/${repo}-${role}"
-git -c credential.username=${GIT_USER} \
-    -c credential.helper='!f() { test \"$1\" = get && echo "password=${GIT_PASSWORD}"; }; f' \
-    clone "${GIT_USER}:${GIT_PASSWORD}@${GIT_SERVER}:${repo}" "${PROJECT_FOLDER}/tmp/${repo}-${role}"
-
-  # Force git to work in the cloned repo
-  export GIT_DIR="${PROJECT_FOLDER}/tmp/${repo}-${role}/.git"
-  export GIT_WORK_TREE="${PROJECT_FOLDER}/tmp/${repo}-${role}/.git"
 }
 
 
@@ -70,13 +106,10 @@ main()
 * Corrections for practical exercise phase 1
 ************************************************************************************************************************"
 
-
-
-
   for file in "${PROJECT_FOLDER}"/data/*.json; do
     if [[ -f "${file}" ]]; then
-      correct_one "${file}"
-      read
+      parse_data "${file}"
+      clone "${file}"
     fi
   done
 
