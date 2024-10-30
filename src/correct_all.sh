@@ -44,7 +44,7 @@ parse_data()
 clone()
 {
   # Perform clone and checkout code
-  echo "* INFO: Deleting ${PROJECT_FOLDER}/tmp/${repo}-${role}"
+  echo "* INFO: Deleting ${PROJECT_FOLDER}/tmp/${repo}-${role}, if exists"
   rm -rf "${PROJECT_FOLDER}/tmp/${repo}-${role}"
 
   # Clone repo
@@ -67,7 +67,7 @@ clone()
   fi
 
   # Perform clone and checkout code
-  echo "* INFO: Checking out test2 ${test2}"
+  echo "* INFO: Deleting out ${PROJECT_FOLDER}/tmp/${repo}-${role}2, if exists"
   rm -rf "${PROJECT_FOLDER}/tmp/${repo}-${role}2"
 
   # Clone repo
@@ -76,7 +76,7 @@ clone()
 
   {
     echo "* INFO: setting ${PROJECT_FOLDER}/tmp/${repo}-${role}2 as the current working git tree"
-    cd "${PROJECT_FOLDER}/tmp/${repo}-${role}2"
+    cd "${PROJECT_FOLDER}/tmp/${repo}-${role}2"  || exit 2
 
     echo "* INFO: Checking out test2 ${test2}"
     git checkout "${test2}"
