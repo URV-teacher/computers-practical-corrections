@@ -17,10 +17,8 @@ check_deadlines()
   # Capture upload date of first test
   {
     cd "${PROJECT_FOLDER}/repos/${repo}-${role}-test1" || exit 3
-    git show -s --format=%ci
     upload_date="$(git show -s --format=%ci)"
   }
-  echo $upload_date
 
   # Check deadline limits
   if [[ "${upload_date}" < ${deadlines[$(expr ${lab:1} - 1)]} ]]; then
@@ -35,10 +33,8 @@ check_deadlines()
     # Capture upload date of second test
     {
       cd "${PROJECT_FOLDER}/repos/${repo}-${role}-test2" || exit 3
-      git show -s --format=%ci
       upload_date="$(git show -s --format=%ci)"
     }
-    echo $upload_date
 
     # Check deadline limits
     if [[ "${upload_date}" < ${deadlines[$(expr ${lab:1} - 1)]} ]]; then
@@ -54,10 +50,8 @@ check_deadlines()
     # Capture upload date of second test
     {
       cd "${PROJECT_FOLDER}/repos/${repo}-${role}-fusion" || exit 3
-      git show -s --format=%ci
       upload_date="$(git show -s --format=%ci)"
     }
-    echo $upload_date
 
     # Check deadline limits
     if [[ "${upload_date}" < ${deadlines[1]} ]]; then
@@ -101,20 +95,22 @@ clone()
     git checkout "${test1}"
   }
 
-  # fusion
-  echo "* INFO: Deleting ${PROJECT_FOLDER}/repos/${repo}-${role}-fusion, if exists"
-  rm -rf "${PROJECT_FOLDER}/repos/${repo}-${role}-fusion"
+  # clone fusion if defined
+  if [ -n "${fusion}" ]; then
+    echo "* INFO: Deleting ${PROJECT_FOLDER}/repos/${repo}-${role}-fusion, if exists"
+    rm -rf "${PROJECT_FOLDER}/repos/${repo}-${role}-fusion"
 
-  echo "* INFO: cloning ${repo} into ${PROJECT_FOLDER}/repos/${repo}-${role}-fusion"
-  git clone "${GIT_USER}@${GIT_SERVER}:${repo}" "${PROJECT_FOLDER}/repos/${repo}-${role}-fusion"
+    echo "* INFO: cloning ${repo} into ${PROJECT_FOLDER}/repos/${repo}-${role}-fusion"
+    git clone "${GIT_USER}@${GIT_SERVER}:${repo}" "${PROJECT_FOLDER}/repos/${repo}-${role}-fusion"
 
-  {
-    echo "* INFO: setting ${PROJECT_FOLDER}/repos/${repo}-${role}-fusion as the current working git tree"
-    cd "${PROJECT_FOLDER}/repos/${repo}-${role}-fusion" || exit 1
+    {
+      echo "* INFO: setting ${PROJECT_FOLDER}/repos/${repo}-${role}-fusion as the current working git tree"
+      cd "${PROJECT_FOLDER}/repos/${repo}-${role}-fusion" || exit 1
 
-    echo "* INFO: Checking out test1 ${test1}"
-    git checkout "${test1}"
-  }
+      echo "* INFO: Checking out fusion ${fusion}"
+      git checkout "${fusion}"
+    }
+  fi
 
   # End function if it is the same test
   if [ "${test1}" == "${test2}" ]; then
