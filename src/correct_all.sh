@@ -51,13 +51,13 @@ clone()
   echo "* INFO: cloning ${repo} into ${PROJECT_FOLDER}/tmp/${repo}-${role}"
   git clone "${GIT_USER}@${GIT_SERVER}:${repo}" "${PROJECT_FOLDER}/tmp/${repo}-${role}"
 
-  # Force git to work in the cloned repo and checkout first test
-  echo "* INFO: setting ${PROJECT_FOLDER}/tmp/${repo}-${role} as the current working git tree"
-  export GIT_WORK_TREE="${PROJECT_FOLDER}/tmp/${repo}-${role}"
+  {
+    echo "* INFO: setting ${PROJECT_FOLDER}/tmp/${repo}-${role} as the current working git tree"
+    cd "${PROJECT_FOLDER}/tmp/${repo}-${role}" || exit 1
 
-  echo "* INFO: Checking out test1 ${test1}"
-  git checkout "${test1}"
-
+    echo "* INFO: Checking out test1 ${test1}"
+    git checkout "${test1}"
+  }
   # End function if it is the same test
   if [ "${test1}" == "${test2}" ]; then
     echo "* INFO: test1 ${test1} and ${test2} are the same, ending clone function"
@@ -74,12 +74,13 @@ clone()
   echo "* INFO: cloning ${repo} into ${PROJECT_FOLDER}/tmp/${repo}-${role}2"
   git clone "${GIT_USER}@${GIT_SERVER}:${repo}" "${PROJECT_FOLDER}/tmp/${repo}-${role}2"
 
-  # Force git to work in the cloned repo and checkout first test
-  echo "* INFO: setting ${PROJECT_FOLDER}/tmp/${repo}-${role}2 as the current working git tree"
-  export GIT_WORK_TREE="${PROJECT_FOLDER}/tmp/${repo}-${role}2"
+  {
+    echo "* INFO: setting ${PROJECT_FOLDER}/tmp/${repo}-${role}2 as the current working git tree"
+    cd "${PROJECT_FOLDER}/tmp/${repo}-${role}2"
 
-  echo "* INFO: Checking out test2 ${test2}"
-  git checkout "${test2}"
+    echo "* INFO: Checking out test2 ${test2}"
+    git checkout "${test2}"
+  }
 }
 
 # Description: Corrects the computers practical exercise of one student
