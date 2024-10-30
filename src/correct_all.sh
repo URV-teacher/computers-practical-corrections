@@ -40,24 +40,39 @@ parse_data()
   lab="$(cat "$1" | ${JQ} .lab | tr -d "\"")"
 }
 
-
+# This function is idempotent
 clone()
 {
-  # Perform clone and checkout code
-  echo "* INFO: Deleting ${PROJECT_FOLDER}/tmp/${repo}-${role}, if exists"
-  rm -rf "${PROJECT_FOLDER}/tmp/${repo}-${role}"
+  # test1
+  echo "* INFO: Deleting ${PROJECT_FOLDER}/repos/${repo}-${role}-test1, if exists"
+  rm -rf "${PROJECT_FOLDER}/repos/${repo}-${role}-test1"
 
-  # Clone repo
-  echo "* INFO: cloning ${repo} into ${PROJECT_FOLDER}/tmp/${repo}-${role}"
-  git clone "${GIT_USER}@${GIT_SERVER}:${repo}" "${PROJECT_FOLDER}/tmp/${repo}-${role}"
+  echo "* INFO: cloning ${repo} into ${PROJECT_FOLDER}/repos/${repo}-${role}-test1"
+  git clone "${GIT_USER}@${GIT_SERVER}:${repo}" "${PROJECT_FOLDER}/repos/${repo}-${role}-test1"
 
   {
-    echo "* INFO: setting ${PROJECT_FOLDER}/tmp/${repo}-${role} as the current working git tree"
-    cd "${PROJECT_FOLDER}/tmp/${repo}-${role}" || exit 1
+    echo "* INFO: setting ${PROJECT_FOLDER}/repos/${repo}-${role}-test1 as the current working git tree"
+    cd "${PROJECT_FOLDER}/repos/${repo}-${role}-test1" || exit 1
 
     echo "* INFO: Checking out test1 ${test1}"
     git checkout "${test1}"
   }
+
+  # fusion
+  echo "* INFO: Deleting ${PROJECT_FOLDER}/repos/${repo}-${role}-fusion, if exists"
+  rm -rf "${PROJECT_FOLDER}/repos/${repo}-${role}-fusion"
+
+  echo "* INFO: cloning ${repo} into ${PROJECT_FOLDER}/repos/${repo}-${role}-fusion"
+  git clone "${GIT_USER}@${GIT_SERVER}:${repo}" "${PROJECT_FOLDER}/repos/${repo}-${role}-fusion"
+
+  {
+    echo "* INFO: setting ${PROJECT_FOLDER}/repos/${repo}-${role}-fusion as the current working git tree"
+    cd "${PROJECT_FOLDER}/repos/${repo}-${role}-fusion" || exit 1
+
+    echo "* INFO: Checking out test1 ${test1}"
+    git checkout "${test1}"
+  }
+
   # End function if it is the same test
   if [ "${test1}" == "${test2}" ]; then
     echo "* INFO: test1 ${test1} and ${test2} are the same, ending clone function"
@@ -66,36 +81,20 @@ clone()
     echo "* INFO: test1 ${test1} and ${test2} are different, cloning again to check out for ${test2}"
   fi
 
-  # Perform clone and checkout code
-  echo "* INFO: Deleting out ${PROJECT_FOLDER}/tmp/${repo}-${role}2, if exists"
-  rm -rf "${PROJECT_FOLDER}/tmp/${repo}-${role}2"
+  # test2
+  echo "* INFO: Deleting out ${PROJECT_FOLDER}/repos/${repo}-${role}-test2, if exists"
+  rm -rf "${PROJECT_FOLDER}/repos/${repo}-${role}-test2"
 
-  # Clone repo
-  echo "* INFO: cloning ${repo} into ${PROJECT_FOLDER}/tmp/${repo}-${role}2"
-  git clone "${GIT_USER}@${GIT_SERVER}:${repo}" "${PROJECT_FOLDER}/tmp/${repo}-${role}2"
+  echo "* INFO: cloning ${repo} into ${PROJECT_FOLDER}/repos/${repo}-${role}-test2"
+  git clone "${GIT_USER}@${GIT_SERVER}:${repo}" "${PROJECT_FOLDER}/repos/${repo}-${role}-test2"
 
   {
-    echo "* INFO: setting ${PROJECT_FOLDER}/tmp/${repo}-${role}2 as the current working git tree"
-    cd "${PROJECT_FOLDER}/tmp/${repo}-${role}2"  || exit 2
+    echo "* INFO: setting ${PROJECT_FOLDER}/repos/${repo}-${role}-test2 as the current working git tree"
+    cd "${PROJECT_FOLDER}/repos/${repo}-${role}-test2"  || exit 2
 
     echo "* INFO: Checking out test2 ${test2}"
     git checkout "${test2}"
   }
-}
-
-# Description: Corrects the computers practical exercise of one student
-# Argument 1: Relative or absolute path to the json file that contains the data for the correction
-correct_one()
-{
-  echo "
-************************************************************************************************************************
-* Student: ${name} (${email})
-* Role: ${role}
-************************************************************************************************************************"
-
-
-  #echo   git clone "${GIT_USER}:${GIT_PASSWORD}@${GIT_SERVER}:${repo}" "${PROJECT_FOLDER}/tmp/${repo}-${role}"
-  #git clone "https://${GIT_USER}:${GIT_PASSWORD}@${GIT_SERVER}:${repo}" "${PROJECT_FOLDER}/tmp/${repo}-${role}"
 }
 
 
