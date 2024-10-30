@@ -2,7 +2,7 @@
 # Description: Determines if a commit with a certain SHA1 ID has passed or not the deadline
 # Argument 1: SHA1 ID of the commit to evaluate.
 # Argument 2: Lab of the student who presents this commit.
-check_deadline()
+check_deadlines()
 {
   deadlines=()
   deadlines[0]="2024-10-28 16:00:00"
@@ -14,17 +14,60 @@ check_deadline()
   deadlines[6]="2024-10-23 16:00:00"
   deadlines[7]="2024-10-28 16:00:00"
 
-  # Capture upload date of first commit
-  upload_date="$(git show -s --format=%ci $1)"
+  # Capture upload date of first test
+  {
+    cd "${PROJECT_FOLDER}/repos/${repo}-${role}-test1" || exit 3
+    git show -s --format=%ci
+    upload_date="$(git show -s --format=%ci)"
+  }
+  echo $upload_date
 
   # Check deadline limits
-  if [[ "${upload_date}" < ${deadlines[$(expr ${2:1} - 1)]} ]]; then
-    echo "$1 has been uploaded before deadline"
+  if [[ "${upload_date}" < ${deadlines[$(expr ${lab:1} - 1)]} ]]; then
+    echo "* INFO: ${repo}-${role}-test1, uploaded in ${upload_date} has been uploaded before deadline ${deadlines[$(expr ${lab:1} - 1)]}, of lab ${lab}"
   else
-    echo "$1 has been uploaded after deadline"
+    echo "* ERROR: ${repo}-${role}-test1, uploaded in ${upload_date} has been uploaded AFTER deadline ${deadlines[$(expr ${lab:1} - 1)]}, of lab ${lab}"
+    echo "* INFO: appending to report"
+    echo "${repo}-${role}-test1, uploaded in ${upload_date} has been uploaded AFTER deadline ${deadlines[$(expr ${lab:1} - 1)]} of lab ${lab}" >> "${PROJECT_FOLDER}/out/report.txt"
   fi
-  echo "Upload date: ${upload_date}"
 
+  if [ -d "${PROJECT_FOLDER}/repos/${repo}-${role}-test2" ]; then
+    # Capture upload date of second test
+    {
+      cd "${PROJECT_FOLDER}/repos/${repo}-${role}-test2" || exit 3
+      git show -s --format=%ci
+      upload_date="$(git show -s --format=%ci)"
+    }
+    echo $upload_date
+
+    # Check deadline limits
+    if [[ "${upload_date}" < ${deadlines[$(expr ${lab:1} - 1)]} ]]; then
+      echo "* INFO: ${repo}-${role}-test2, uploaded in ${upload_date} has been uploaded before deadline ${deadlines[$(expr ${lab:1} - 1)]}, of lab ${lab}"
+    else
+      echo "* ERROR: ${repo}-${role}-test2, uploaded in ${upload_date} has been uploaded AFTER deadline ${deadlines[$(expr ${lab:1} - 1)]}, of lab ${lab}"
+      echo "* INFO: appending to report"
+      echo "${repo}-${role}-test2, uploaded in ${upload_date} has been uploaded AFTER deadline ${deadlines[$(expr ${lab:1} - 1)]} of lab ${lab}" >> "${PROJECT_FOLDER}/out/report.txt"
+    fi
+  fi
+
+  if [ -d "${PROJECT_FOLDER}/repos/${repo}-${role}-fusion" ]; then
+    # Capture upload date of second test
+    {
+      cd "${PROJECT_FOLDER}/repos/${repo}-${role}-fusion" || exit 3
+      git show -s --format=%ci
+      upload_date="$(git show -s --format=%ci)"
+    }
+    echo $upload_date
+
+    # Check deadline limits
+    if [[ "${upload_date}" < ${deadlines[1]} ]]; then
+      echo "* INFO: ${repo}-${role}-fusion, uploaded in ${upload_date} has been uploaded before deadline ${deadlines[1]}, of lab ${lab}"
+    else
+      echo "* ERROR: ${repo}-${role}-fusion, uploaded in ${upload_date} has been uploaded AFTER deadline ${deadlines[1]}, of lab ${lab}"
+      echo "* INFO: appending to report"
+      echo "${repo}-${role}-fusion, uploaded in ${upload_date} has been uploaded AFTER deadline ${deadlines[1]} of lab ${lab}" >> "${PROJECT_FOLDER}/out/report.txt"
+    fi
+  fi
 }
 
 parse_data()
@@ -106,10 +149,13 @@ main()
 * Corrections for practical exercise phase 1
 ************************************************************************************************************************"
 
+  echo -n > "${PROJECT_FOLDER}/out/report.txt"
+
   for file in "${PROJECT_FOLDER}"/data/*.json; do
     if [[ -f "${file}" ]]; then
       parse_data "${file}"
-      clone "${file}"
+      clone
+      check_deadlines
     fi
   done
 
