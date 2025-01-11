@@ -63,3 +63,5 @@ JPprofes_v4.23e.zip
 # ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡NEVER UPLOAD JPROFES TO PUBLIC GITHUB REPO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 .env
+secrets/
+secrets
