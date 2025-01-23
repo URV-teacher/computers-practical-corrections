@@ -1,0 +1,11 @@
+{ 
+  "name": "NOM I COGNOMS", 
+  "email": "NOM.COGNOM@estudiants.urv.cat", 
+  "repo": "comp_XX",
+  "role": "progX",
+  "tests": [ "abc1234", "cba4321" ],
+  "fusion": "123abcd",
+  "lab": "LX",
+  "blocks": [ "2C", "2G", "2Ia" ],
+  "notes": "blablabla"
+}
